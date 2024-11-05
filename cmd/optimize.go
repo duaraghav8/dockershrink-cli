@@ -39,10 +39,10 @@ type Action struct {
 }
 
 type APIResponse struct {
-	ModifiedProject map[string]string `json:"modified_project"`
-	ActionsTaken    []Action          `json:"actions_taken"`
-	Recommendations []Action          `json:"recommendations"`
-	Error           string            `json:"error"`
+	ModifiedProject map[string]json.RawMessage `json:"modified_project"` // Updated
+	ActionsTaken    []Action                   `json:"actions_taken"`
+	Recommendations []Action                   `json:"recommendations"`
+	Error           string                     `json:"error"`
 }
 
 var optimizeCmd = &cobra.Command{
@@ -71,13 +71,13 @@ the OPENAI_API_KEY environment variable.`,
 		// Collect files
 		dockerfileContent := readFile(dockerfilePath, "Dockerfile")
 		dockerignoreContent := readFile(dockerignorePath, ".dockerignore")
-		packageJSONContent := readJSONFile(packageJSONPath, "package.json") // Updated
+		packageJSONContent := readJSONFile(packageJSONPath, "package.json") // Already updated
 
 		// Prepare API request
 		apiReq := APIRequest{
 			Dockerfile:   dockerfileContent,
 			Dockerignore: dockerignoreContent,
-			PackageJSON:  packageJSONContent, // Updated
+			PackageJSON:  packageJSONContent,
 		}
 
 		if openaiAPIKey == "" {
@@ -143,10 +143,26 @@ the OPENAI_API_KEY environment variable.`,
 
 		for filename, content := range apiResp.ModifiedProject {
 			outputPath := filepath.Join(outputDir, filename)
-			err := ioutil.WriteFile(outputPath, []byte(content), 0644)
-			if err != nil {
-				fmt.Printf("Error writing file %s: %v\n", filename, err)
-				os.Exit(1)
+			if filename == "package.json" {
+				// Handle package.json as JSON object
+				var formattedJSON bytes.Buffer
+				err := json.Indent(&formattedJSON, content, "", "  ")
+				if err != nil {
+					fmt.Printf("Error formatting JSON for %s: %v\n", filename, err)
+					os.Exit(1)
+				}
+				err = ioutil.WriteFile(outputPath, formattedJSON.Bytes(), 0644)
+				if err != nil {
+					fmt.Printf("Error writing file %s: %v\n", filename, err)
+					os.Exit(1)
+				}
+			} else {
+				// Handle other files as strings
+				err := ioutil.WriteFile(outputPath, content, 0644)
+				if err != nil {
+					fmt.Printf("Error writing file %s: %v\n", filename, err)
+					os.Exit(1)
+				}
 			}
 		}
 
@@ -157,9 +173,9 @@ the OPENAI_API_KEY environment variable.`,
 }
 
 func init() {
-	optimizeCmd.Flags().StringVar(&dockerfilePath, "dockerfile", "", "Path to Dockerfile (if not provided, defaults to ./Dockerfile)")
-	optimizeCmd.Flags().StringVar(&dockerignorePath, "dockerignore", "", "Path to .dockerignore (if not provided, defaults to ./.dockerignore)")
-	optimizeCmd.Flags().StringVar(&packageJSONPath, "package-json", "", "Path to package.json (if not provided, defaults to ./package.json)")
+	optimizeCmd.Flags().StringVar(&dockerfilePath, "dockerfile", "", "Path to Dockerfile (default: ./Dockerfile)")
+	optimizeCmd.Flags().StringVar(&dockerignorePath, "dockerignore", "", "Path to .dockerignore (default: ./.dockerignore)")
+	optimizeCmd.Flags().StringVar(&packageJSONPath, "package-json", "", "Path to package.json (default: ./package.json)")
 	optimizeCmd.Flags().StringVar(&openaiAPIKey, "openai-api-key", "", "Your OpenAI API key (can also be set from the OPENAI_API_KEY environment variable)")
 }
 
