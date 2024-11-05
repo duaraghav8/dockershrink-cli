@@ -1,11 +1,9 @@
 package cmd
 
 import (
-	"bufio"
-	"bytes"
+	"bytes" // Added this import
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -63,7 +61,7 @@ var optimizeCmd = &cobra.Command{
 		var config Config
 		decoder := json.NewDecoder(configFile)
 		if err := decoder.Decode(&config); err != nil {
-			fmt.Println("Error reading config file.")
+			fmt.Printf("Error reading config file: %v\n", err) // Updated to include error
 			os.Exit(1)
 		}
 
@@ -95,14 +93,14 @@ var optimizeCmd = &cobra.Command{
 
 		reqBody, err := json.Marshal(apiReq)
 		if err != nil {
-			fmt.Println("Error preparing API request.")
+			fmt.Printf("Error preparing API request: %v\n", err) // Updated
 			os.Exit(1)
 		}
 
 		client := &http.Client{}
-		request, err := http.NewRequest("POST", apiURL, bytesReader(reqBody))
+		request, err := http.NewRequest("POST", apiURL, bytes.NewReader(reqBody)) // Updated
 		if err != nil {
-			fmt.Println("Error creating API request.")
+			fmt.Printf("Error creating API request: %v\n", err) // Updated
 			os.Exit(1)
 		}
 		request.Header.Set("Content-Type", "application/json")
@@ -110,7 +108,7 @@ var optimizeCmd = &cobra.Command{
 
 		response, err := client.Do(request)
 		if err != nil {
-			fmt.Println("Error sending API request.")
+			fmt.Printf("Error sending API request: %v\n", err) // Updated
 			os.Exit(1)
 		}
 		defer response.Body.Close()
@@ -118,13 +116,13 @@ var optimizeCmd = &cobra.Command{
 		// Handle API response
 		body, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			fmt.Println("Error reading API response.")
+			fmt.Printf("Error reading API response: %v\n", err) // Updated
 			os.Exit(1)
 		}
 
 		var apiResp APIResponse
 		if err := json.Unmarshal(body, &apiResp); err != nil {
-			fmt.Println("Error parsing API response.")
+			fmt.Printf("Error parsing API response: %v\n", err) // Updated
 			os.Exit(1)
 		}
 
@@ -135,13 +133,16 @@ var optimizeCmd = &cobra.Command{
 
 		// Write modified files
 		outputDir := filepath.Join(".", "dockershrink.optimised")
-		os.MkdirAll(outputDir, os.ModePerm)
+		if err := os.MkdirAll(outputDir, os.ModePerm); err != nil { // Added error handling
+			fmt.Printf("Error creating output directory: %v\n", err)
+			os.Exit(1)
+		}
 
 		for filename, content := range apiResp.ModifiedProject {
 			outputPath := filepath.Join(outputDir, filename)
 			err := ioutil.WriteFile(outputPath, []byte(content), 0644)
 			if err != nil {
-				fmt.Printf("Error writing file %s: %v\n", filename, err)
+				fmt.Printf("Error writing file %s: %v\n", filename, err) // Updated
 				os.Exit(1)
 			}
 		}
@@ -171,10 +172,6 @@ func readFile(path string, defaultName string) string {
 		return ""
 	}
 	return string(content)
-}
-
-func bytesReader(data []byte) io.Reader {
-	return bufio.NewReader(bytes.NewReader(data))
 }
 
 func printActions(actions []Action, title string) {
