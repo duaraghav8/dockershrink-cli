@@ -158,7 +158,13 @@ the OPENAI_API_KEY environment variable.`,
 				}
 			} else {
 				// Handle other files as strings
-				err := ioutil.WriteFile(outputPath, content, 0644)
+				var fileContent string
+				err := json.Unmarshal(content, &fileContent)
+				if err != nil {
+					fmt.Printf("Error parsing content for %s: %v\n", filename, err)
+					os.Exit(1)
+				}
+				err = ioutil.WriteFile(outputPath, []byte(fileContent), 0644)
 				if err != nil {
 					fmt.Printf("Error writing file %s: %v\n", filename, err)
 					os.Exit(1)
