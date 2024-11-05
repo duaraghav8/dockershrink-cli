@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"bytes" // Added this import
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -25,10 +25,10 @@ type Config struct {
 }
 
 type APIRequest struct {
-	Dockerfile   string `json:"Dockerfile,omitempty"`
-	Dockerignore string `json:".dockerignore,omitempty"`
-	PackageJSON  string `json:"package.json,omitempty"`
-	OpenAIAPIKey string `json:"openai_api_key,omitempty"`
+	Dockerfile   string          `json:"Dockerfile,omitempty"`
+	Dockerignore string          `json:".dockerignore,omitempty"`
+	PackageJSON  json.RawMessage `json:"package.json,omitempty"`
+	OpenAIAPIKey string          `json:"openai_api_key,omitempty"`
 }
 
 type Action struct {
@@ -47,10 +47,10 @@ type APIResponse struct {
 
 var optimizeCmd = &cobra.Command{
 	Use:   "optimize",
-	Short: "Modifies code files to reduce the size of your Nodejs project's docker Image",
+	Short: "Optimize your NodeJS Docker project",
 	Long: `Optimize your NodeJS Docker project by sending your Dockerfile, .dockerignore, and package.json
-to the Dockershrink backend. You can provide your OpenAI API key using the --openai-api-key flag or by setting
-the OPENAI_API_KEY environment variable to enable AI features (highly recommended).`,
+to the Dockershrink API. You can provide your OpenAI API key using the --openai-api-key flag or by setting
+the OPENAI_API_KEY environment variable.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Load API key from config
 		configPath := filepath.Join(os.Getenv("HOME"), ".dsconfig.json")
@@ -64,20 +64,20 @@ the OPENAI_API_KEY environment variable to enable AI features (highly recommende
 		var config Config
 		decoder := json.NewDecoder(configFile)
 		if err := decoder.Decode(&config); err != nil {
-			fmt.Printf("Error reading config file: %v\n", err) // Updated to include error
+			fmt.Printf("Error reading config file: %v\n", err)
 			os.Exit(1)
 		}
 
 		// Collect files
 		dockerfileContent := readFile(dockerfilePath, "Dockerfile")
 		dockerignoreContent := readFile(dockerignorePath, ".dockerignore")
-		packageJSONContent := readFile(packageJSONPath, "package.json")
+		packageJSONContent := readJSONFile(packageJSONPath, "package.json") // Updated
 
 		// Prepare API request
 		apiReq := APIRequest{
 			Dockerfile:   dockerfileContent,
 			Dockerignore: dockerignoreContent,
-			PackageJSON:  packageJSONContent,
+			PackageJSON:  packageJSONContent, // Updated
 		}
 
 		if openaiAPIKey == "" {
@@ -96,14 +96,14 @@ the OPENAI_API_KEY environment variable to enable AI features (highly recommende
 
 		reqBody, err := json.Marshal(apiReq)
 		if err != nil {
-			fmt.Printf("Error preparing API request: %v\n", err) // Updated
+			fmt.Printf("Error preparing API request: %v\n", err)
 			os.Exit(1)
 		}
 
 		client := &http.Client{}
-		request, err := http.NewRequest("POST", apiURL, bytes.NewReader(reqBody)) // Updated
+		request, err := http.NewRequest("POST", apiURL, bytes.NewReader(reqBody))
 		if err != nil {
-			fmt.Printf("Error creating API request: %v\n", err) // Updated
+			fmt.Printf("Error creating API request: %v\n", err)
 			os.Exit(1)
 		}
 		request.Header.Set("Content-Type", "application/json")
@@ -111,7 +111,7 @@ the OPENAI_API_KEY environment variable to enable AI features (highly recommende
 
 		response, err := client.Do(request)
 		if err != nil {
-			fmt.Printf("Error sending API request: %v\n", err) // Updated
+			fmt.Printf("Error sending API request: %v\n", err)
 			os.Exit(1)
 		}
 		defer response.Body.Close()
@@ -119,13 +119,13 @@ the OPENAI_API_KEY environment variable to enable AI features (highly recommende
 		// Handle API response
 		body, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			fmt.Printf("Error reading API response: %v\n", err) // Updated
+			fmt.Printf("Error reading API response: %v\n", err)
 			os.Exit(1)
 		}
 
 		var apiResp APIResponse
 		if err := json.Unmarshal(body, &apiResp); err != nil {
-			fmt.Printf("Error parsing API response: %v\n", err) // Updated
+			fmt.Printf("Error parsing API response: %v\n", err)
 			os.Exit(1)
 		}
 
@@ -136,7 +136,7 @@ the OPENAI_API_KEY environment variable to enable AI features (highly recommende
 
 		// Write modified files
 		outputDir := filepath.Join(".", "dockershrink.optimised")
-		if err := os.MkdirAll(outputDir, os.ModePerm); err != nil { // Added error handling
+		if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
 			fmt.Printf("Error creating output directory: %v\n", err)
 			os.Exit(1)
 		}
@@ -145,7 +145,7 @@ the OPENAI_API_KEY environment variable to enable AI features (highly recommende
 			outputPath := filepath.Join(outputDir, filename)
 			err := ioutil.WriteFile(outputPath, []byte(content), 0644)
 			if err != nil {
-				fmt.Printf("Error writing file %s: %v\n", filename, err) // Updated
+				fmt.Printf("Error writing file %s: %v\n", filename, err)
 				os.Exit(1)
 			}
 		}
@@ -157,13 +157,24 @@ the OPENAI_API_KEY environment variable to enable AI features (highly recommende
 }
 
 func init() {
-	optimizeCmd.Flags().StringVar(&dockerfilePath, "dockerfile", "", "Path to Dockerfile")
-	optimizeCmd.Flags().StringVar(&dockerignorePath, "dockerignore", "", "Path to .dockerignore")
-	optimizeCmd.Flags().StringVar(&packageJSONPath, "package-json", "", "Path to package.json")
+	optimizeCmd.Flags().StringVar(&dockerfilePath, "dockerfile", "", "Path to Dockerfile (if not provided, defaults to ./Dockerfile)")
+	optimizeCmd.Flags().StringVar(&dockerignorePath, "dockerignore", "", "Path to .dockerignore (if not provided, defaults to ./.dockerignore)")
+	optimizeCmd.Flags().StringVar(&packageJSONPath, "package-json", "", "Path to package.json (if not provided, defaults to ./package.json)")
 	optimizeCmd.Flags().StringVar(&openaiAPIKey, "openai-api-key", "", "Your OpenAI API key (can also be set from the OPENAI_API_KEY environment variable)")
 }
 
 func readFile(path string, defaultName string) string {
+	if path == "" {
+		path = filepath.Join(".", defaultName)
+	}
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	return string(content)
+}
+
+func readJSONFile(path string, defaultName string) json.RawMessage {
 	if path == "" {
 		path = filepath.Join(".", defaultName)
 		if _, err := os.Stat(path); os.IsNotExist(err) && defaultName == "package.json" {
@@ -172,9 +183,15 @@ func readFile(path string, defaultName string) string {
 	}
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		return ""
+		return nil
 	}
-	return string(content)
+	// Validate that it's valid JSON
+	var temp interface{}
+	if err := json.Unmarshal(content, &temp); err != nil {
+		fmt.Printf("Error parsing JSON file %s: %v\n", path, err)
+		os.Exit(1)
+	}
+	return json.RawMessage(content)
 }
 
 func printActions(actions []Action, title string) {
