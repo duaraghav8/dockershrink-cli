@@ -47,7 +47,10 @@ type APIResponse struct {
 
 var optimizeCmd = &cobra.Command{
 	Use:   "optimize",
-	Short: "Optimize your NodeJS Docker project",
+	Short: "Modifies code files to reduce the size of your Nodejs project's docker Image",
+	Long: `Optimize your NodeJS Docker project by sending your Dockerfile, .dockerignore, and package.json
+to the Dockershrink backend. You can provide your OpenAI API key using the --openai-api-key flag or by setting
+the OPENAI_API_KEY environment variable to enable AI features (highly recommended).`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Load API key from config
 		configPath := filepath.Join(os.Getenv("HOME"), ".dsconfig.json")
@@ -157,7 +160,7 @@ func init() {
 	optimizeCmd.Flags().StringVar(&dockerfilePath, "dockerfile", "", "Path to Dockerfile")
 	optimizeCmd.Flags().StringVar(&dockerignorePath, "dockerignore", "", "Path to .dockerignore")
 	optimizeCmd.Flags().StringVar(&packageJSONPath, "package-json", "", "Path to package.json")
-	optimizeCmd.Flags().StringVar(&openaiAPIKey, "openai-api-key", "", "Your OpenAI API key")
+	optimizeCmd.Flags().StringVar(&openaiAPIKey, "openai-api-key", "", "Your OpenAI API key (can also be set from the OPENAI_API_KEY environment variable)")
 }
 
 func readFile(path string, defaultName string) string {
