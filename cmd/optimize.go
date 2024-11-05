@@ -107,7 +107,7 @@ the OPENAI_API_KEY environment variable to enable AI features (highly recommende
 			os.Exit(1)
 		}
 		request.Header.Set("Content-Type", "application/json")
-		request.Header.Set("Authorization", "Bearer "+config.APIKey)
+		request.Header.Set("Authorization", config.APIKey)
 
 		response, err := client.Do(request)
 		if err != nil {
