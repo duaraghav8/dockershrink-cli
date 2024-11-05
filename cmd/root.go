@@ -12,9 +12,9 @@ var rootCmd = &cobra.Command{
 	Short: "Dockershrink optimizes your NodeJS Docker images.",
 	Long: `Dockershrink is a CLI tool that helps you reduce the size of your NodeJS Docker images
 by applying best practices and optimizations to your Dockerfile and related files.`,
+	// Updated Run function to show help message
 	Run: func(cmd *cobra.Command, args []string) {
-		// Default action is to run the optimize command
-		optimizeCmd.Run(cmd, args)
+		cmd.Help()
 	},
 }
 
