@@ -262,12 +262,10 @@ func printActions(actions []Action, title string) {
 		filenameColor := color.New(color.FgCyan).SprintFunc()
 		titleColor := color.New(color.FgGreen).SprintFunc()
 		descColor := color.New(color.FgWhite).SprintFunc()
-		ruleColor := color.New(color.FgYellow).SprintFunc()
 
 		fmt.Printf("File: %s\n", filenameColor(action.Filename))
 		fmt.Printf("Title: %s\n", titleColor(action.Title))
 		fmt.Printf("Description: %s\n", descColor(action.Description))
-		fmt.Printf("Rule: %s\n", ruleColor(action.Rule))
 		fmt.Println("-----------------------------------")
 	}
 }
