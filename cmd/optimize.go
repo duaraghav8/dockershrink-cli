@@ -193,6 +193,12 @@ the OPENAI_API_KEY environment variable.`,
 			}
 		}
 
+		// Check if there are no actions taken and no recommendations
+		if len(apiResp.ActionsTaken) == 0 && len(apiResp.Recommendations) == 0 {
+			fmt.Println("Docker image is already optimized, no further actions were taken by dockershrink.")
+			return
+		}
+
 		// Display actions and recommendations
 		printActions(apiResp.ActionsTaken, "Actions Taken")
 		printActions(apiResp.Recommendations, "Recommendations")
