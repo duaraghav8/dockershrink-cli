@@ -2,11 +2,11 @@
 
 Official commandline application to interact with the [Dockershrink](https://dockershrink.com) platform.
 
-Dockershrink helps you reduce the size of your Nodejs projects' Docker images.
+Dockershrink helps you reduce the size of your Nodejs Docker images.
 
-It combines the power of traditional rule-based analysis with Generative AI to yield state-of-the-art optimizations for your image.
+It combines the power of traditional rule-based analysis with Generative AI to yield state-of-the-art optimizations for your images.
 
-NOTE: Dockershrink is in **BETA**
+**NOTE**: Dockershrink is in **BETA**
 
 ## How it works
 
@@ -89,26 +89,21 @@ We **highly recommend** you enable AI for more intelligent & powerful optimizati
 
 You can also specify the paths to all files using options (see `dockershrink help optimize` for the available options).
 
-## Build Instructions
+## Build from source
 
 ### Prerequisites
 
-- [Golang](https://golang.org/dl/) installed (version 1.17 or higher).
-- [Docker](https://www.docker.com/get-started) installed for building inside a container.
+- Clone this repository on to your local machine.
+- Make sure [Golang](https://golang.org/dl/) is installed on your system (at least version 1.23)
+- Make sure [Docker](https://www.docker.com/get-started) installed on your system and the Docker daemon is running.
 
 ### How to build the binaries
-
-To compile the CLI for `darwin` OS and `amd64` cpu architecture, run:
-```bash
-make build
-```
-
-To compile it for all supported platforms and architectures, run:
+To compile the code and build binaries for all supported platforms and architectures, run:
 ```bash
 make build-all
 ```
 
-Alternatively, built the binaries yourself by running the following commands inside a Docker container:
+Alternatively, build the binaries yourself by running the following commands inside a Docker container:
 
 ```bash
 docker build -t dockershrink-builder .
@@ -121,3 +116,6 @@ docker run --rm -v "$PWD":/app -w /app dockershrink-builder sh -c "\
     CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o bin/dockershrink-windows-amd64.exe main.go &&\
     CGO_ENABLED=0 GOOS=windows GOARCH=arm64 go build -o bin/dockershrink-windows-arm64.exe main.go\
 "
+```
+
+This will create all the binaries inside the `bin/` directory.
