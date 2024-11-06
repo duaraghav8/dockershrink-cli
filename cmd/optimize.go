@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -47,9 +47,10 @@ type APIResponse struct {
 
 var optimizeCmd = &cobra.Command{
 	Use:   "optimize",
-	Short: "Optimize your NodeJS Docker project",
+	Short: "Optimize your NodeJS Docker project to reduce image size",
 	Long: `Optimize your NodeJS Docker project by sending your Dockerfile, .dockerignore, and package.json
-to the Dockershrink API. You can provide your OpenAI API key using the --openai-api-key flag or by setting
+to the Dockershrink platform.
+You can optionally enable AI features by providing your OpenAI API key using the --openai-api-key option or by setting
 the OPENAI_API_KEY environment variable.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Load API key from config
@@ -76,21 +77,21 @@ the OPENAI_API_KEY environment variable.`,
 		// Inform the user about which files were picked up
 		fmt.Println()
 		if dockerfileFound {
-			fmt.Printf("- Using %s\n", dockerfileUsedPath)
+			fmt.Printf("* Using %s\n", dockerfileUsedPath)
 		} else {
-			fmt.Printf("- No Dockerfile found in the default paths\n")
+			fmt.Printf("* No Dockerfile found in the default paths\n")
 		}
 
 		if dockerignoreFound {
-			fmt.Printf("- Using %s\n", dockerignoreUsedPath)
+			fmt.Printf("* Using %s\n", dockerignoreUsedPath)
 		} else {
-			fmt.Printf("- No .dockerignore found in the default paths\n")
+			fmt.Printf("* No .dockerignore found in the default paths\n")
 		}
 
 		if packageJSONFound {
-			fmt.Printf("- Using %s\n", packageJSONUsedPath)
+			fmt.Printf("* Using %s\n", packageJSONUsedPath)
 		} else {
-			fmt.Printf("- No package.json found in the default paths\n")
+			fmt.Printf("* No package.json found in the default paths\n")
 		}
 		fmt.Println()
 
@@ -138,7 +139,7 @@ the OPENAI_API_KEY environment variable.`,
 		defer response.Body.Close()
 
 		// Handle API response
-		body, err := ioutil.ReadAll(response.Body)
+		body, err := io.ReadAll(response.Body)
 		if err != nil {
 			fmt.Printf("Error reading API response: %v\n", err)
 			os.Exit(1)
@@ -172,7 +173,7 @@ the OPENAI_API_KEY environment variable.`,
 					fmt.Printf("Error formatting JSON for %s: %v\n", filename, err)
 					os.Exit(1)
 				}
-				err = ioutil.WriteFile(outputPath, formattedJSON.Bytes(), 0644)
+				err = os.WriteFile(outputPath, formattedJSON.Bytes(), 0644)
 				if err != nil {
 					fmt.Printf("Error writing file %s: %v\n", filename, err)
 					os.Exit(1)
@@ -185,7 +186,7 @@ the OPENAI_API_KEY environment variable.`,
 					fmt.Printf("Error parsing content for %s: %v\n", filename, err)
 					os.Exit(1)
 				}
-				err = ioutil.WriteFile(outputPath, []byte(fileContent), 0644)
+				err = os.WriteFile(outputPath, []byte(fileContent), 0644)
 				if err != nil {
 					fmt.Printf("Error writing file %s: %v\n", filename, err)
 					os.Exit(1)
@@ -221,7 +222,7 @@ func readFile(path string, defaultName string) (string, string, bool) {
 		usedPath = filepath.Join(".", defaultName)
 	}
 
-	content, err := ioutil.ReadFile(usedPath)
+	content, err := os.ReadFile(usedPath)
 	if err != nil {
 		found = false
 		return "", usedPath, found
@@ -242,13 +243,13 @@ func readJSONFile(path string, defaultName string) (json.RawMessage, string, boo
 		}
 	}
 
-	content, err := ioutil.ReadFile(usedPath)
+	content, err := os.ReadFile(usedPath)
 	if err != nil {
 		found = false
 		return nil, usedPath, found
 	}
 
-	// Validate that it's valid JSON
+	// Ensure that it is valid JSON
 	var temp interface{}
 	if err := json.Unmarshal(content, &temp); err != nil {
 		fmt.Printf("Error parsing JSON file %s: %v\n", usedPath, err)

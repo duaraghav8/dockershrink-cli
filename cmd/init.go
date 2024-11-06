@@ -13,7 +13,7 @@ var apiKey string
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize dockershrink with your API key",
+	Short: "Initialize the cli with your API key so you can make authenticated requests to the dockershrink platform.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if apiKey == "" {
 			fmt.Println("Error: --api-key is required")
