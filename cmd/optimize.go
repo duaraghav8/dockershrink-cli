@@ -39,7 +39,7 @@ type Action struct {
 }
 
 type APIResponse struct {
-	ModifiedProject map[string]json.RawMessage `json:"modified_project"` // Updated
+	ModifiedProject map[string]json.RawMessage `json:"modified_project"`
 	ActionsTaken    []Action                   `json:"actions_taken"`
 	Recommendations []Action                   `json:"recommendations"`
 	Error           string                     `json:"error"`
@@ -68,10 +68,31 @@ the OPENAI_API_KEY environment variable.`,
 			os.Exit(1)
 		}
 
-		// Collect files
-		dockerfileContent := readFile(dockerfilePath, "Dockerfile")
-		dockerignoreContent := readFile(dockerignorePath, ".dockerignore")
-		packageJSONContent := readJSONFile(packageJSONPath, "package.json") // Already updated
+		// Collect files and their statuses
+		dockerfileContent, dockerfileUsedPath, dockerfileFound := readFile(dockerfilePath, "Dockerfile")
+		dockerignoreContent, dockerignoreUsedPath, dockerignoreFound := readFile(dockerignorePath, ".dockerignore")
+		packageJSONContent, packageJSONUsedPath, packageJSONFound := readJSONFile(packageJSONPath, "package.json")
+
+		// Inform the user about which files were picked up
+		fmt.Println()
+		if dockerfileFound {
+			fmt.Printf("- Using %s\n", dockerfileUsedPath)
+		} else {
+			fmt.Printf("- No Dockerfile found in the default paths\n")
+		}
+
+		if dockerignoreFound {
+			fmt.Printf("- Using %s\n", dockerignoreUsedPath)
+		} else {
+			fmt.Printf("- No .dockerignore found in the default paths\n")
+		}
+
+		if packageJSONFound {
+			fmt.Printf("- Using %s\n", packageJSONUsedPath)
+		} else {
+			fmt.Printf("- No package.json found in the default paths\n")
+		}
+		fmt.Println()
 
 		// Prepare API request
 		apiReq := APIRequest{
@@ -181,39 +202,54 @@ the OPENAI_API_KEY environment variable.`,
 func init() {
 	optimizeCmd.Flags().StringVar(&dockerfilePath, "dockerfile", "", "Path to Dockerfile (default: ./Dockerfile)")
 	optimizeCmd.Flags().StringVar(&dockerignorePath, "dockerignore", "", "Path to .dockerignore (default: ./.dockerignore)")
-	optimizeCmd.Flags().StringVar(&packageJSONPath, "package-json", "", "Path to package.json (default: ./package.json)")
-	optimizeCmd.Flags().StringVar(&openaiAPIKey, "openai-api-key", "", "Your OpenAI API key (can also be set from the OPENAI_API_KEY environment variable)")
+	optimizeCmd.Flags().StringVar(&packageJSONPath, "package-json", "", "Path to package.json (default: ./package.json or ./src/package.json)")
+	optimizeCmd.Flags().StringVar(&openaiAPIKey, "openai-api-key", "", "Your OpenAI API key (alternatively, set the OPENAI_API_KEY environment variable)")
 }
 
-func readFile(path string, defaultName string) string {
-	if path == "" {
-		path = filepath.Join(".", defaultName)
+func readFile(path string, defaultName string) (string, string, bool) {
+	var usedPath string
+	var found bool
+	if path != "" {
+		usedPath = path
+	} else {
+		usedPath = filepath.Join(".", defaultName)
 	}
-	content, err := ioutil.ReadFile(path)
+
+	content, err := ioutil.ReadFile(usedPath)
 	if err != nil {
-		return ""
+		found = false
+		return "", usedPath, found
 	}
-	return string(content)
+	found = true
+	return string(content), usedPath, found
 }
 
-func readJSONFile(path string, defaultName string) json.RawMessage {
-	if path == "" {
-		path = filepath.Join(".", defaultName)
-		if _, err := os.Stat(path); os.IsNotExist(err) && defaultName == "package.json" {
-			path = filepath.Join(".", "src", defaultName)
+func readJSONFile(path string, defaultName string) (json.RawMessage, string, bool) {
+	var usedPath string
+	var found bool
+	if path != "" {
+		usedPath = path
+	} else {
+		usedPath = filepath.Join(".", defaultName)
+		if _, err := os.Stat(usedPath); os.IsNotExist(err) && defaultName == "package.json" {
+			usedPath = filepath.Join(".", "src", defaultName)
 		}
 	}
-	content, err := ioutil.ReadFile(path)
+
+	content, err := ioutil.ReadFile(usedPath)
 	if err != nil {
-		return nil
+		found = false
+		return nil, usedPath, found
 	}
+
 	// Validate that it's valid JSON
 	var temp interface{}
 	if err := json.Unmarshal(content, &temp); err != nil {
-		fmt.Printf("Error parsing JSON file %s: %v\n", path, err)
+		fmt.Printf("Error parsing JSON file %s: %v\n", usedPath, err)
 		os.Exit(1)
 	}
-	return json.RawMessage(content)
+	found = true
+	return json.RawMessage(content), usedPath, found
 }
 
 func printActions(actions []Action, title string) {
