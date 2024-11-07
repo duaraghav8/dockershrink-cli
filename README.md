@@ -92,7 +92,9 @@ dockershrink help optimize
 ### Using AI Features
 
 > [!NOTE]
-> Using AI features is optional.
+> Using AI features is optional, but **highly recommended** for more customized and powerful optimizations.
+>
+> Currently, you need to supply your own openai api key, so even though Dockershrink itself is free, openai usage might incur some cost for you.
 
 By default, dockershrink only runs rule-based analysis to optimize your image definition.
 
@@ -105,8 +107,6 @@ dockershrink optimize --openai-api-key <your openai api key>
 export OPENAI_API_KEY=<your openai api key>
 dockershrink optimize
 ```
-
-We **highly recommend** you enable AI for more intelligent & powerful optimizations.
 
 ### Default file paths
 By default, the CLI looks for the files to optimize in the current directory.
