@@ -9,7 +9,7 @@ Official commandline application to interact with the [Dockershrink](https://doc
 It combines the power of traditional rule-based analysis with Generative AI to yield state-of-the-art optimizations for your images :brain:
 
 > [!IMPORTANT]
-> Dockershrink is in **BETA**.
+> Dockershrink is in **BETA** and is **FREE** to use.
 > 
 > We would love to hear what you think! You can provide your feedback from your [dockershrink dashboard](https://dockershrink.com/dashboard) or [Create an Issue](https://github.com/duaraghav8/dockershrink-cli/issues) in this repository.
 
@@ -91,7 +91,11 @@ dockershrink help optimize
 
 ### Using AI Features
 
-**NOTE**: By default, dockershrink only runs rule-based analysis to optimize your image definition.
+> [!NOTE]
+> Using AI features is optional.
+
+By default, dockershrink only runs rule-based analysis to optimize your image definition.
+
 If you want to enable AI, you must supply your own [OpenAI API Key](https://openai.com/index/openai-api/).
 
 ```bash
