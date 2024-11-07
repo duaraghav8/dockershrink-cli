@@ -2,7 +2,7 @@
 
 ![Typical interaction with dockershrink CLI](./static/dockershrink-how-it-works.gif)
 
-Official commandline application to interact with the [Dockershrink](https://dockershrink.com) platform.
+Official commandline application to interact with the [Dockershrink](https://dockershrink.com) backend.
 
 **Dockershrink is a SaaS platform that helps you reduce the size of your Nodejs Docker images by applying code optimizations.**
 
@@ -18,9 +18,11 @@ Every org using containers in development or production environments understands
 
 But not everyone realizes that by just implementing some basic techniques, they can reduce the size of a 1GB Docker image down to **as little as 100 MB**!
 
-Imagine the costs saved in storage & data transfer, decrease in build times AND the productivity gains of developers :exploding_head:
+([I also made a video on how to do this.](https://youtu.be/vHBHxQfK6cM))
 
-Dockershrink aims to auomatically apply advanced optimization techniques such as Multistage builds, Light base images, removing unused dependencies, etc. so that developers & devops engineers don't have to waste time and everybody reaps the benefits.
+Imagine the costs saved in storage & data transfer, decrease in build times AND the productivity gains for developers :exploding_head:
+
+Dockershrink aims to auomatically apply advanced optimization techniques such as Multistage builds, Light base images, removing unused dependencies, etc. so that developers & devops engineers don't have to waste time doing so and everybody still reaps the benefits!
 
 You're welcome :wink:
 
@@ -38,11 +40,10 @@ The CLI outputs a list of actions it took on your files.
 It may also include suggestions on further improvements you could make.
 
 ## Setup
-If you haven't already
+If you haven't already, [signup for an account](https://dockershrink.com) and get your API Key from your dashboard. Then proceed with the below steps.
 
-1. Download the pre-built CLI for your platform from the Releases page.
-
-Alternatively, you can also clone this repository and build the binary yourself by following the build instructions below.
+1. Download the pre-built CLI for your platform from the [Releases](https://github.com/duaraghav8/dockershrink-cli/releases) page.
+Alternatively, you can clone this repository and build the binary yourself by following the build instructions below.
 
 2. Rename your binary to `dockershrink` and make sure that the binary is in your `PATH` environment variable.
 
@@ -55,7 +56,7 @@ cp ./dockershrink /usr/local/bin/dockershrink
 
 4. Initialize dockershrink with your API Key.
 
-Copy your platform API Key from your account dashboard once you log into dockershrink.
+Copy your API Key from your dashboard once you log into dockershrink.
 Then run the following command in your terminal:
 
 ```bash
@@ -98,8 +99,7 @@ dockershrink optimize
 We **highly recommend** you enable AI for more intelligent & powerful optimizations.
 
 ### Default file paths
-
-**NOTE**: By default, the CLI looks for the files to optimize in the current directory.
+By default, the CLI looks for the files to optimize in the current directory.
 
 You can also specify the paths to all files using options (see `dockershrink help optimize` for the available options).
 
