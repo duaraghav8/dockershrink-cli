@@ -7,6 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	version = "dev" // default version is "dev", overridden during build
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "dockershrink",
 	Short: "Dockershrink optimizes your NodeJS Docker images.",
@@ -28,4 +32,5 @@ func Execute() {
 func init() {
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(optimizeCmd)
+	rootCmd.AddCommand(versionCmd)
 }
