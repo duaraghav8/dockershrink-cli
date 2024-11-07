@@ -1,17 +1,18 @@
 # Dockershrink CLI
 
+![Typical interaction with dockershrink CLI](./static/dockershrink-how-it-works.gif)
+
 Official commandline application to interact with the [Dockershrink](https://dockershrink.com) platform.
 
-Dockershrink helps you reduce the size of your Nodejs Docker images.
+**Dockershrink helps you reduce the size of your Nodejs Docker images.**
 
 It combines the power of traditional rule-based analysis with Generative AI to yield state-of-the-art optimizations for your images.
 
 **NOTE**: Dockershrink is in **BETA**
 
+We would love to hear what you think! You can provide your feedback from your dockershrink dashboard or open up an Issue in this repository.
+
 ## How it works
-
-TODO: Add a gif of how it works
-
 The CLI is the primary user-facing application of dockershrink.
 
 When you invoke it on a project, it communicates with the Dockershrink platform to analyze some of your project files.
