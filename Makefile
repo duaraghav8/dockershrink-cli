@@ -5,7 +5,7 @@ SRC = main.go
 BUILD_DIR = bin
 DOCKER_IMAGE = dockershrink-builder
 VERSION = 0.0.1
-PACKAGE = dockershrink.com/dockershrink-cli/cmd
+PACKAGE = github.com/duaraghav8/dockershrink-cli/cmd
 
 .PHONY: build release clean
 

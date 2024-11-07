@@ -1,4 +1,4 @@
-module dockershrink.com/dockershrink-cli
+module github.com/duaraghav8/dockershrink-cli
 
 go 1.23.2
 
