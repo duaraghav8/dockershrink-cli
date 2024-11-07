@@ -8,10 +8,10 @@ Official commandline application to interact with the [Dockershrink](https://doc
 
 It combines the power of traditional rule-based analysis with Generative AI to yield state-of-the-art optimizations for your images :brain:
 
-### NOTE
-Dockershrink is in **BETA**
-
-We would love to hear what you think! You can provide your feedback from your [dockershrink dashboard](https://dockershrink.com/dashboard) or [Create an Issue](https://github.com/duaraghav8/dockershrink-cli/issues) in this repository.
+> [!IMPORTANT]
+> Dockershrink is in **BETA**.
+> 
+> We would love to hear what you think! You can provide your feedback from your [dockershrink dashboard](https://dockershrink.com/dashboard) or [Create an Issue](https://github.com/duaraghav8/dockershrink-cli/issues) in this repository.
 
 ## Why does dockershrink exist?
 Every org using containers in development or production environments understands the pain of managing hundreds or even thousands of BLOATED Docker images in their infrastructure.
@@ -31,7 +31,13 @@ The CLI is the primary user-facing application of dockershrink.
 
 When you invoke it on a project, it communicates with the Dockershrink platform to analyze some of your project files.
 
-Currently, these files are `Dockerfile`, `package.json` and `.dockerignore`.
+Currently, these files are:
+
+:point_right: `Dockerfile`
+
+:point_right: `package.json`
+
+:point_right: `.dockerignore`
 
 It then creates a new directory called `dockershrink.optimized` inside the project, which contains modified versions of your files that will result in a smaller Docker Image.
 
