@@ -122,24 +122,9 @@ You can also specify the paths to all files using options (see `dockershrink hel
 - Make sure [Docker](https://www.docker.com/get-started) installed on your system and the Docker daemon is running.
 
 ### How to build the binaries
-To compile the code and build binaries for all supported platforms and architectures, run:
+To compile the code and build binaries for all supported platforms and cpu architectures, run:
 ```bash
-make build-all
-```
-
-Alternatively, build the binaries yourself by running the following commands inside a Docker container:
-
-```bash
-docker build -t dockershrink-builder .
-
-docker run --rm -v "$PWD":/app -w /app dockershrink-builder sh -c "\
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/dockershrink-linux-amd64 main.go &&\
-    CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o bin/dockershrink-linux-arm64 main.go &&\
-    CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o bin/dockershrink-darwin-amd64 main.go &&\
-    CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o bin/dockershrink-darwin-arm64 main.go &&\
-    CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o bin/dockershrink-windows-amd64.exe main.go &&\
-    CGO_ENABLED=0 GOOS=windows GOARCH=arm64 go build -o bin/dockershrink-windows-arm64.exe main.go\
-"
+make release
 ```
 
 This will create all the binaries inside the `bin/` directory.
