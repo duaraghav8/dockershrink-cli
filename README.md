@@ -4,13 +4,25 @@
 
 Official commandline application to interact with the [Dockershrink](https://dockershrink.com) platform.
 
-**Dockershrink helps you reduce the size of your Nodejs Docker images.**
+**Dockershrink is a SaaS platform that helps you reduce the size of your Nodejs Docker images by applying code optimizations.**
 
-It combines the power of traditional rule-based analysis with Generative AI to yield state-of-the-art optimizations for your images.
+It combines the power of traditional rule-based analysis with Generative AI to yield state-of-the-art optimizations for your images :brain:
 
-**NOTE**: Dockershrink is in **BETA**
+### NOTE
+Dockershrink is in **BETA**
 
-We would love to hear what you think! You can provide your feedback from your dockershrink dashboard or open up an Issue in this repository.
+We would love to hear what you think! You can provide your feedback from your [dockershrink dashboard](https://dockershrink.com/dashboard) or [Create an Issue](https://github.com/duaraghav8/dockershrink-cli/issues) in this repository.
+
+## Why does dockershrink exist?
+Every org using containers in development or production environments understands the pain of managing hundreds or even thousands of BLOATED Docker images in their infrastructure.
+
+But not everyone realizes that by just implementing some basic techniques, they can reduce the size of a 1GB Docker image down to **as little as 100 MB**!
+
+Imagine the costs saved in storage & data transfer, decrease in build times AND the productivity gains of developers :exploding_head:
+
+Dockershrink aims to auomatically apply advanced optimization techniques such as Multistage builds, Light base images, removing unused dependencies, etc. so that developers & devops engineers don't have to waste time and everybody reaps the benefits.
+
+You're welcome :wink:
 
 ## How it works
 The CLI is the primary user-facing application of dockershrink.
@@ -26,6 +38,7 @@ The CLI outputs a list of actions it took on your files.
 It may also include suggestions on further improvements you could make.
 
 ## Setup
+If you haven't already
 
 1. Download the pre-built CLI for your platform from the Releases page.
 
