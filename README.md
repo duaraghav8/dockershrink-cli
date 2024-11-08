@@ -147,6 +147,9 @@ git push origin v0.1.0
 
 2. Release
 ```bash
+# Make sure GPG is present on your system and you have a default key which is added to Github.
+
+# set your github access token
 export GITHUB_TOKEN="<your GH token>"
 
 goreleaser release --clean

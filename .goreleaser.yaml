@@ -22,6 +22,11 @@ builds:
     ldflags:
       - -s -w -X github.com/duaraghav8/dockershrink-cli/cmd.version={{.Version}}
 
+archives:
+  - format_overrides:
+      - format: zip
+        goos: windows
+
 checksum:
   name_template: "checksums.txt"
 
