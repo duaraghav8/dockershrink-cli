@@ -147,5 +147,7 @@ git push origin v0.1.0
 
 2. Release
 ```bash
+export GITHUB_TOKEN="<your GH token>"
+
 goreleaser release
 ```
