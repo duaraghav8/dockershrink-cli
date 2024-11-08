@@ -49,6 +49,12 @@ It may also include suggestions on further improvements you could make.
 If you haven't already, [signup for an account](https://dockershrink.com) and get your API Key from your dashboard. Then proceed with the below steps.
 
 1. Download the pre-built CLI for your platform from the [Releases](https://github.com/duaraghav8/dockershrink-cli/releases) page.
+
+On MacOS, use brew to install the CLI:
+```bash
+brew install duaraghav8/tap/dockershrink
+```
+
 Alternatively, you can clone this repository and build the binary yourself by following the build instructions below.
 
 2. Rename your binary to `dockershrink` and make sure that the binary is in your `PATH` environment variable.
@@ -120,11 +126,26 @@ You can also specify the paths to all files using options (see `dockershrink hel
 - Clone this repository on to your local machine.
 - Make sure [Golang](https://golang.org/dl/) is installed on your system (at least version 1.23)
 - Make sure [Docker](https://www.docker.com/get-started) installed on your system and the Docker daemon is running.
+- Install [GoReleaser](https://goreleaser.com/) (at least version 2.4)
 
-### How to build the binaries
-To compile the code and build binaries for all supported platforms and cpu architectures, run:
+### Build for local testing
 ```bash
-make release
+# Single binary
+goreleaser build --single-target --clean --snapshot
+
+# All binaries
+goreleaser release --snapshot --clean
 ```
 
-This will create all the binaries inside the `bin/` directory.
+### Create a new release
+1. Create a Git Tag with the new version
+
+```bash
+git tag -a v0.1.0 -m "Release version 0.1.0"
+git push origin v0.1.0
+```
+
+2. Release
+```bash
+goreleaser release
+```
