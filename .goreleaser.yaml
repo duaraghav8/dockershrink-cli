@@ -27,3 +27,19 @@ checksum:
 
 signs:
   - artifacts: checksum
+
+changelog:
+  disable: true
+
+brews:
+  - url_template: "https://github.com/duaraghav8/dockershrink-cli/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    commit_author:
+      name: "Raghav Dua"
+      email: "duaraghav8@protonmail.com"
+    homepage: "https://dockershrink.com/"
+    description: "A commandline tool to reduce the size of Nodejs Docker images"
+    dependencies:
+      - name: "go"
+    repository:
+      owner: "duaraghav8"
+      name: "homebrew-dockershrink"
