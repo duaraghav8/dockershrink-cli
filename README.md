@@ -114,6 +114,11 @@ export OPENAI_API_KEY=<your openai api key>
 dockershrink optimize
 ```
 
+> [!NOTE]
+> Dockershrink does not store your OpenAI API Key.
+>
+> So you must provide your key every time you want "optimize" to enable AI features.
+
 ### Default file paths
 By default, the CLI looks for the files to optimize in the current directory.
 
