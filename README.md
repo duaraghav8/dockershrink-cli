@@ -75,11 +75,11 @@ Then run the following command in your terminal:
 dockershrink init --api-key <paste your api key here>
 ```
 
-This is a one-time step.
+This is a one-time step which creates a `.dsconfig.json` file inside your home directory.
 
-Congratulations! Your instalation is now complete!
+If your API key changes, simply run `init` again with the new api key to update it.
 
-Head over to Usage.
+Congratulations! Your installation is now complete!
 
 ## Usage
 Navigate into the root directory of one of your Node.js projects and run the simplest command:
